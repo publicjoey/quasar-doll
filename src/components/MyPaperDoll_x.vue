@@ -1,155 +1,65 @@
 <template>
-  <div class="paper-doll relative">
-    <!-- 底圖 (娃娃本體) -->
-    <img
-      v-if="selectedBase"
-      :src="bases[selectedBase]"
-      class="base-doll"
-    />
+  <div class="paper-doll">
+    <!-- 娃娃區域 -->
+    <div class="doll-container">
+      <!-- 固定大小的 base-doll -->
+      <img src="@/assets/base-doll.jpg" class="base" />
 
-    <!-- 頭 -->
-    <img
-      v-if="selectedHead"
-      :src="heads[selectedHead]"
-      class="layer head"
-      :style="getHeadStyle(headPosition)"
-      @mousedown="startDrag($event, 'head')"
-    />
+      <!-- 各部位 -->
+      <img v-if="selectedHead" :src="heads[selectedHead]" class="part" />
+      <img v-if="selectedCloth" :src="clothes[selectedCloth]" class="part" />
+      <img v-if="selectedPant" :src="pants[selectedPant]" class="part" />
+      <img v-if="selectedShoe" :src="shoes[selectedShoe]" class="part" />
+    </div>
 
-    <!-- 衣服 -->
-    <img
-      v-if="selectedCloth"
-      :src="clothes[selectedCloth]"
-      class="layer clothes"
-      :style="getStyle(clothPosition)"
-      @mousedown="startDrag($event, 'cloth')"
-    />
-
-    <!-- 褲子 -->
-    <img
-      v-if="selectedPant"
-      :src="pants[selectedPant]"
-      class="layer pants"
-      :style="getStyle(pantPosition)"
-      @mousedown="startDrag($event, 'pant')"
-    />
-
-    <!-- 鞋子 -->
-    <img
-      v-if="selectedShoe"
-      :src="shoes[selectedShoe]"
-      class="layer shoes"
-      :style="getStyle(shoePosition)"
-      @mousedown="startDrag($event, 'shoe')"
-    />
-
-    <!-- 控制面板 -->
-    <div class="controls q-mt-lg">
-      <!-- 底圖選擇 -->
-      <div>
-        <h6>角色底圖</h6>
-        <q-btn
-          v-for="(src, key) in bases"
-          :key="key"
-          flat
-          @click="selectedBase = key"
-        >
-          <img :src="src" width="50" />
-        </q-btn>
-      </div>
-
-      <!-- 頭部選擇 -->
-      <div>
-        <h6>頭部</h6>
+    <!-- 選擇按鈕區 -->
+    <div class="controls">
+      <div class="control-group">
+        <div class="label">頭部</div>
         <q-btn
           v-for="(src, key) in heads"
           :key="key"
           flat
           @click="selectedHead = key"
         >
-          <img :src="src" width="50" />
+          <img :src="src" class="preview" />
         </q-btn>
       </div>
 
-      <!-- 衣服選擇 -->
-      <div>
-        <h6>衣服</h6>
+      <div class="control-group">
+        <div class="label">衣服</div>
         <q-btn
           v-for="(src, key) in clothes"
           :key="key"
           flat
           @click="selectedCloth = key"
         >
-          <img :src="src" width="50" />
+          <img :src="src" class="preview" />
         </q-btn>
       </div>
 
-      <!-- 褲子選擇 -->
-      <div>
-        <h6>褲子</h6>
+      <div class="control-group">
+        <div class="label">褲子</div>
         <q-btn
           v-for="(src, key) in pants"
           :key="key"
           flat
           @click="selectedPant = key"
         >
-          <img :src="src" width="50" />
+          <img :src="src" class="preview" />
         </q-btn>
       </div>
 
-      <!-- 鞋子選擇 -->
-      <div>
-        <h6>鞋子</h6>
+      <div class="control-group">
+        <div class="label">鞋子</div>
         <q-btn
           v-for="(src, key) in shoes"
           :key="key"
           flat
           @click="selectedShoe = key"
         >
-          <img :src="src" width="50" />
+          <img :src="src" class="preview" />
         </q-btn>
-      </div>
-
-      <!-- 頭部大小調整滑桿 -->
-      <div class="q-mt-md">
-        <h6>調整頭部大小</h6>
-        <q-slider
-          v-model="headSize.value"
-          :min="60"
-          :max="200"
-          :step="1"
-          label
-          color="primary"
-          class="q-mx-md"
-        />
-      </div>
-
-      <!-- 頭部水平位置滑桿 -->
-      <div class="q-mt-md">
-        <h6>調整頭部左右位置</h6>
-        <q-slider
-          v-model="headPosition.value.x"
-          :min="-100"
-          :max="100"
-          :step="1"
-          label
-          color="secondary"
-          class="q-mx-md"
-        />
-      </div>
-
-      <!-- 頭部垂直位置滑桿 -->
-      <div class="q-mt-md">
-        <h6>調整頭部上下位置</h6>
-        <q-slider
-          v-model="headPosition.value.y"
-          :min="-100"
-          :max="100"
-          :step="1"
-          label
-          color="accent"
-          class="q-mx-md"
-        />
       </div>
     </div>
   </div>
@@ -158,115 +68,82 @@
 <script setup>
 import { ref } from "vue";
 
-// 載入 assets 中的圖檔
-const baseModules = import.meta.glob("../assets/base-dolls/*.jpg", { eager: true });
-const clothesModules = import.meta.glob("../assets/clothes/*.jpg", { eager: true });
-const pantsModules = import.meta.glob("../assets/pants/*.jpg", { eager: true });
-const shoesModules = import.meta.glob("../assets/shoes/*.jpg", { eager: true });
-const headsModules = import.meta.glob("../assets/heads/*.jpg", { eager: true });
+// 自動載入 assets 圖片
+const heads = import.meta.glob("@/assets/heads/*.jpg", {
+  eager: true,
+  import: "default",
+});
+const clothes = import.meta.glob("@/assets/clothes/*.jpg", {
+  eager: true,
+  import: "default",
+});
+const pants = import.meta.glob("@/assets/pants/*.jpg", {
+  eager: true,
+  import: "default",
+});
+const shoes = import.meta.glob("@/assets/shoes/*.jpg", {
+  eager: true,
+  import: "default",
+});
 
-function loadImages(modules) {
-  const images = {};
-  for (const file in modules) {
-    const key = file.split("/").pop().replace(".jpg", "");
-    images[key] = modules[file].default;
-  }
-  return images;
-}
-
-const bases = loadImages(baseModules);
-const clothes = loadImages(clothesModules);
-const pants = loadImages(pantsModules);
-const shoes = loadImages(shoesModules);
-const heads = loadImages(headsModules);
-
-const selectedBase = ref(Object.keys(bases)[0] || null);
+// 選中的部位
 const selectedHead = ref(null);
 const selectedCloth = ref(null);
 const selectedPant = ref(null);
 const selectedShoe = ref(null);
-
-// 各部位位置（預設座標）
-const headPosition = ref({ x: 90, y: 0 });
-const clothPosition = ref({ x: 0, y: 120 });
-const pantPosition = ref({ x: 0, y: 200 });
-const shoePosition = ref({ x: 0, y: 280 });
-
-// 預設頭部大小
-const headSize = ref({ value: 120 });
-
-// 拖曳狀態
-const dragging = ref(null);
-const offset = ref({ x: 0, y: 0 });
-
-function getStyle(pos) {
-  return {
-    transform: `translate(${pos.x}px, ${pos.y}px)`,
-    cursor: "move",
-  };
-}
-
-// 專門給 head 用的 style（含大小）
-function getHeadStyle(pos) {
-  return {
-    width: headSize.value.value + "px",
-    height: headSize.value.value + "px",
-    transform: `translate(${pos.x}px, ${pos.y}px)`,
-    cursor: "move",
-  };
-}
-
-function startDrag(event, part) {
-  dragging.value = part;
-  offset.value = {
-    x: event.clientX - getPosition(part).x,
-    y: event.clientY - getPosition(part).y,
-  };
-  window.addEventListener("mousemove", onDrag);
-  window.addEventListener("mouseup", stopDrag);
-}
-
-function onDrag(event) {
-  if (!dragging.value) return;
-  const pos = getPosition(dragging.value);
-  pos.x = event.clientX - offset.value.x;
-  pos.y = event.clientY - offset.value.y;
-}
-
-function stopDrag() {
-  dragging.value = null;
-  window.removeEventListener("mousemove", onDrag);
-  window.removeEventListener("mouseup", stopDrag);
-}
-
-function getPosition(part) {
-  if (part === "head") return headPosition.value;
-  if (part === "cloth") return clothPosition.value;
-  if (part === "pant") return pantPosition.value;
-  if (part === "shoe") return shoePosition.value;
-}
 </script>
 
 <style scoped>
 .paper-doll {
-  width: 300px;
-  margin: auto;
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-.base-doll,
-.layer {
+
+/* 娃娃容器固定大小 */
+.doll-container {
+  position: relative;
+  width: auto;
+  height: 300px; /* 固定高度 */
+}
+
+/* base 固定大小 */
+.doll-container .base {
+  height: 100%;
+  width: auto;
+  display: block;
+}
+
+/* 疊加的配件，保持原圖比例 */
+.doll-container .part {
   position: absolute;
   top: 0;
   left: 0;
-  width: 300px;
-  user-select: none;
+  max-width: 100%;
+  max-height: 100%;
 }
-.head {
-  z-index: 10;
-}
+
+/* 控制按鈕區 */
 .controls {
-  position: relative;
-  margin-top: 420px;
-  text-align: center;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.label {
+  font-weight: bold;
+  min-width: 50px;
+}
+
+.preview {
+  max-width: 50px;
+  max-height: 50px;
 }
 </style>

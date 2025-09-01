@@ -169,9 +169,9 @@ const headPosition = ref({ x: 0, y: 0 });
 const headSize = ref({ width: 120, height: 120 });
 
 // 其他部位位置
-const clothPosition = ref({ x: 0, y: 124 });
-const pantPosition = ref({ x: 0, y: 344 });
-const shoePosition = ref({ x: 0, y: 611 });
+const clothPosition = ref({ x: 0, y: 222 });
+const pantPosition = ref({ x: 0, y: 200 });
+const shoePosition = ref({ x: 0, y: 280 });
 
 // 取得樣式
 function getStyle(pos) {
@@ -191,7 +191,6 @@ function getHeadStyle() {
 
 <style scoped>
 .paper-doll {
-  /* joey 這是整個布局的 */
   width: 800px;
   margin: auto;
   position: relative;
@@ -201,7 +200,7 @@ function getHeadStyle() {
   position: absolute;
   top: 0;
   left: 0;
-  /* width: 300px;  joey */
+  width: 300px;
   user-select: none;
 }
 .head {
@@ -209,8 +208,7 @@ function getHeadStyle() {
 }
 .controls {
   position: relative;
-  /* joey 大佈局頂部 */
-  margin-top: 55px;
+  margin-top: 340px;
   text-align: center;
 }
 </style>
