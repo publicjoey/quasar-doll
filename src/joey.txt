@@ -1,0 +1,8 @@
+   cd quasar-project
+   quasar dev # or: yarn quasar dev # or: npx quasar dev
+
+cd quasar-project
+
+quasar dev
+
+http://localhost:9000/#/
